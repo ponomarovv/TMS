@@ -15,13 +15,13 @@ namespace TMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly UserManager<UserEntity> _userManager;
         private readonly SignInManager<UserEntity> _signInManager;
         private readonly JwtSettings _jwtSettings;
 
-        public UsersController(UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager, IOptions<JwtSettings> jwtSettings)
+        public UserController(UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager, IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
