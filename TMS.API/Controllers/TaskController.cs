@@ -8,108 +8,107 @@ using TMS.API.DTO;
 using TMS.BLL.Contracts;
 using TMS.BLL.Models;
 
-namespace TMS.API.Controllers
+namespace TMS.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+// [Authorize]
+public class TaskController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class TasksController : ControllerBase
+    private readonly ITaskService _taskService;
+
+    public TaskController(ITaskService taskService)
     {
-        private readonly ITaskService _taskService;
+        _taskService = taskService;
+    }
 
-        public TasksController(ITaskService taskService)
+    [HttpPost]
+    public async Task<IActionResult> CreateTask([FromBody] CreateTaskDto model)
+    {
+        if (!ModelState.IsValid)
         {
-            _taskService = taskService;
+            return BadRequest(ModelState);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateTask([FromBody] CreateTaskDto model)
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var task = new TaskModel
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            Id = Guid.NewGuid(),
+            Title = model.Title,
+            Description = model.Description,
+            DueDate = model.DueDate,
+            Status = model.Status,
+            Priority = model.Priority,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            UserId = userId
+        };
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var task = new TaskModel
-            {
-                Id = Guid.NewGuid(),
-                Title = model.Title,
-                Description = model.Description,
-                DueDate = model.DueDate,
-                Status = model.Status,
-                Priority = model.Priority,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                UserId = userId
-            };
+        await _taskService.CreateTaskAsync(task);
+        return Ok("Task created successfully.");
+    }
 
-            await _taskService.CreateTaskAsync(task);
-            return Ok("Task created successfully.");
+    [HttpGet]
+    public async Task<IActionResult> GetTasks([FromQuery] TaskFilterDto filter)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var tasks = await _taskService.GetTasksAsync(userId, new TaskFilterModel
+        {
+            Status = filter.Status,
+            DueDate = filter.DueDate,
+            Priority = filter.Priority,
+            Page = filter.Page,
+            PageSize = filter.PageSize
+        });
+        return Ok(tasks);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetTask(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var task = await _taskService.GetTaskAsync(id, userId);
+
+        if (task == null)
+        {
+            return NotFound("Task not found.");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetTasks([FromQuery] TaskFilterDto filter)
+        return Ok(task);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateTask(Guid id, [FromBody] UpdateTaskDto model)
+    {
+        if (!ModelState.IsValid)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var tasks = await _taskService.GetTasksAsync(userId, new TaskFilterModel
-            {
-                Status = filter.Status,
-                DueDate = filter.DueDate,
-                Priority = filter.Priority,
-                Page = filter.Page,
-                PageSize = filter.PageSize
-            });
-            return Ok(tasks);
+            return BadRequest(ModelState);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetTask(Guid id)
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var task = await _taskService.GetTaskAsync(id, userId);
+
+        if (task == null)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var task = await _taskService.GetTaskAsync(id, userId);
-
-            if (task == null)
-            {
-                return NotFound("Task not found.");
-            }
-
-            return Ok(task);
+            return NotFound("Task not found.");
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTask(Guid id, [FromBody] UpdateTaskDto model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        task.Title = model.Title;
+        task.Description = model.Description;
+        task.DueDate = model.DueDate;
+        task.Status = model.Status;
+        task.Priority = model.Priority;
+        task.UpdatedAt = DateTime.UtcNow;
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var task = await _taskService.GetTaskAsync(id, userId);
+        await _taskService.UpdateTaskAsync(task);
+        return Ok("Task updated successfully.");
+    }
 
-            if (task == null)
-            {
-                return NotFound("Task not found.");
-            }
-
-            task.Title = model.Title;
-            task.Description = model.Description;
-            task.DueDate = model.DueDate;
-            task.Status = model.Status;
-            task.Priority = model.Priority;
-            task.UpdatedAt = DateTime.UtcNow;
-
-            await _taskService.UpdateTaskAsync(task);
-            return Ok("Task updated successfully.");
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTask(Guid id)
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            await _taskService.DeleteTaskAsync(id, userId);
-            return Ok("Task deleted successfully.");
-        }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTask(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        await _taskService.DeleteTaskAsync(id, userId);
+        return Ok("Task deleted successfully.");
     }
 }
