@@ -12,7 +12,7 @@ namespace TMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-// [Authorize]
+[Authorize]
 public class TaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
