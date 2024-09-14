@@ -29,6 +29,7 @@ builder.Services.AddControllers();
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 builder.Services.AddSingleton(jwtSettings);
 
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

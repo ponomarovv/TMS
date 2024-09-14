@@ -7,16 +7,14 @@ namespace TMS.DAL.Repositories;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
-    private ITaskRepository _taskRepository;
+    public ITaskRepository TaskRepository { get; set; }
 
-    public UnitOfWork(ApplicationDbContext context)
+    public UnitOfWork(ApplicationDbContext context, ITaskRepository taskRepository)
     {
         _context = context;
+        TaskRepository = taskRepository;
     }
-
-    // todo is it bad? taskRepository is not injected!!!
-    public ITaskRepository TaskRepository => _taskRepository ??= new TaskRepository(_context);
-
+    
     public async Task SaveAsync()
     {
         await _context.SaveChangesAsync();
