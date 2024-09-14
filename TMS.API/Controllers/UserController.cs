@@ -19,13 +19,15 @@ public class UserController : ControllerBase
 {
     private readonly UserManager<UserEntity> _userManager;
     private readonly SignInManager<UserEntity> _signInManager;
+    private readonly IConfiguration _configuration;
     private readonly JwtSettings _jwtSettings;
 
-    public UserController(UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager, IOptions<JwtSettings> jwtSettings)
+    public UserController(UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager, IConfiguration configuration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        _jwtSettings = jwtSettings.Value;
+        _configuration = configuration;
+        _jwtSettings = _configuration.GetSection("JwtSettings").Get<JwtSettings>();
     }
 
     [HttpPost("register")]
