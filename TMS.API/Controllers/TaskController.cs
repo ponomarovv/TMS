@@ -12,14 +12,16 @@ namespace TMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+// [Authorize]
 public class TaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
+    private readonly ILogger<TaskController> _logger;
 
-    public TaskController(ITaskService taskService)
+    public TaskController(ITaskService taskService, ILogger<TaskController> logger)
     {
-        _taskService = taskService;
+        _taskService = taskService ?? throw new ArgumentNullException(nameof(taskService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [HttpPost]
@@ -27,11 +29,18 @@ public class TaskController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
+            _logger.LogWarning("Invalid model state for task creation.");
             return BadRequest(ModelState);
         }
 
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-        // var userId = "f2ef75c6-d373-4a81-bc71-5c0a58d1e99a";
+        // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = "f2ef75c6-d373-4a81-bc71-5c0a58d1e99a";
+        if (string.IsNullOrEmpty(userId))
+        {
+            _logger.LogWarning("User ID not found in claims.");
+            return Unauthorized();
+        }
+
         var task = new TaskModel
         {
             Id = Guid.NewGuid(),
@@ -45,8 +54,17 @@ public class TaskController : ControllerBase
             UserId = userId
         };
 
-        await _taskService.CreateTaskAsync(task);
-        return Ok("Task created successfully.");
+        try
+        {
+            await _taskService.CreateTaskAsync(task);
+            _logger.LogInformation("Task created successfully for user {UserId}.", userId);
+            return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while creating task for user {UserId}.", userId);
+            return StatusCode(500, "Internal server error.");
+        }
     }
 
     [HttpGet]

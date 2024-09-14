@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMS.DAL", "TMS.DAL\TMS.DAL.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMS.BLL", "TMS.BLL\TMS.BLL.csproj", "{51A4E037-4735-4B45-A99A-1428039694D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityProject.API", "IdentityProject.API\IdentityProject.API.csproj", "{E387F107-1101-4591-A4C8-FDD1FCD7F96F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{51A4E037-4735-4B45-A99A-1428039694D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51A4E037-4735-4B45-A99A-1428039694D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51A4E037-4735-4B45-A99A-1428039694D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E387F107-1101-4591-A4C8-FDD1FCD7F96F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E387F107-1101-4591-A4C8-FDD1FCD7F96F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E387F107-1101-4591-A4C8-FDD1FCD7F96F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E387F107-1101-4591-A4C8-FDD1FCD7F96F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
