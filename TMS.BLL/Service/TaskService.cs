@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TMS.BLL.Contracts;
 using TMS.BLL.Models;
 using TMS.DAL.Contracts;
 using TMS.DAL.Entities;
 
-namespace TMS.BLL.Services;
+namespace TMS.BLL.Service;
 
 public class TaskService : ITaskService
 {

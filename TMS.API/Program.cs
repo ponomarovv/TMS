@@ -6,13 +6,13 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using TMS.BLL.Contracts;
 using TMS.BLL.Mapper;
-using TMS.BLL.Services;
 using TMS.DAL.Contracts;
 using TMS.DAL.Data;
 using TMS.DAL.Entities;
 using TMS.DAL.Repositories;
 using TMS.API;
 using TMS.API.Extensions;
+using TMS.BLL.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
